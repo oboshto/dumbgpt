@@ -3,49 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --vh: 1vh;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: dark;
-  background-color: #111827; /* dark gray-900 */
+
+  color-scheme: light dark;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #1a1a1a;
-  color: white;
-  height: 100vh; /* Fallback */
-  height: calc(var(--vh, 1vh) * 100);
-  overflow: hidden;
-  display: flex;
-  min-height: 100vh;
-  min-width: 100vw;
-}
-
-html, #root {
-  height: 100vh; /* Fallback */
-  height: calc(var(--vh, 1vh) * 100);
+html, body, #root {
+  height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
 
+body {
+  margin: 0;
+  display: flex;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: #1a1a1a;
+  color: white;
+}
+
 #root {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  min-height: 100vh;
+  width: 100%;
 }
 
 a {
@@ -91,5 +82,13 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Fix for iOS Safari viewport issues */
+@supports (-webkit-touch-callout: none) {
+  .chat-container {
+    /* The height of iOS address bar is around 44px plus some extra padding */
+    padding-bottom: 100px !important;
   }
 }

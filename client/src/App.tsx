@@ -19,38 +19,12 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [shareTooltip, setShareTooltip] = useState<string>('Share DumbGPT');
   const [sessionId] = useState<string>(() => {
-    // Use stored session ID or create a new one
-    const storedSessionId = localStorage.getItem('dumbgpt-session-id');
-    if (storedSessionId) return storedSessionId;
-
-    // Generate a random session ID and store it
     const newSessionId = crypto.randomUUID();
-    localStorage.setItem('dumbgpt-session-id', newSessionId);
     return newSessionId;
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Handle viewport height changes (for mobile browsers, especially iOS Safari)
-    const setVH = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    // Set initial viewport height
-    setVH();
-
-    // Update on resize and orientation change
-    window.addEventListener('resize', setVH);
-    window.addEventListener('orientationchange', setVH);
-
-    return () => {
-      window.removeEventListener('resize', setVH);
-      window.removeEventListener('orientationchange', setVH);
-    };
-  }, []);
 
   // Load saved messages when component mounts
   useEffect(() => {
@@ -263,7 +237,7 @@ function App() {
       </header>
 
       {/* Chat area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 w-full">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 w-full chat-container">
         <div className="max-w-4xl mx-auto w-full">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center min-h-[70vh]">
