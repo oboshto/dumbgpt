@@ -26,6 +26,39 @@ function App() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Handle Safari mobile toolbar issues
+  useEffect(() => {
+    // Function to update visual viewport height
+    const handleVisualViewport = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    // Initial call
+    handleVisualViewport();
+    
+    // Add event listeners for resize and scroll
+    window.addEventListener('resize', handleVisualViewport);
+    
+    // iOS Safari specific events for when toolbar shows/hides
+    if ('visualViewport' in window) {
+      //@ts-ignore - TS doesn't recognize visualViewport
+      window.visualViewport.addEventListener('resize', handleVisualViewport);
+      //@ts-ignore - TS doesn't recognize visualViewport
+      window.visualViewport.addEventListener('scroll', handleVisualViewport);
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleVisualViewport);
+      if ('visualViewport' in window) {
+        //@ts-ignore - TS doesn't recognize visualViewport
+        window.visualViewport.removeEventListener('resize', handleVisualViewport);
+        //@ts-ignore - TS doesn't recognize visualViewport
+        window.visualViewport.removeEventListener('scroll', handleVisualViewport);
+      }
+    };
+  }, []);
+
   // Load saved messages when component mounts
   useEffect(() => {
     const savedMessages = localStorage.getItem('dumbgpt-messages');

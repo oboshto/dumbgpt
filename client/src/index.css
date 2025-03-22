@@ -6,6 +6,7 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --vh: 1vh;  /* Initial value, will be updated by JS */
 
   color-scheme: light dark;
 
@@ -85,8 +86,25 @@ button:focus-visible {
   }
 }
 
-/* Fix for iOS Safari viewport issues */
+/* Fixed height using viewport units for mobile browsers */
+.flex-col.h-screen {
+  height: 100vh; /* Fallback */
+  height: calc(var(--vh, 1vh) * 100); /* Mobile fix */
+}
+
+/* Special handling for iOS Safari */
 @supports (-webkit-touch-callout: none) {
+  /* Prevent content from being hidden behind the toolbar */
+  .flex-col.h-screen {
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Apply padding to input area */
+  .bg-gray-800.border-t.border-gray-700.p-4.pb-2.w-full {
+    padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+  }
+  
   html, body {
     height: -webkit-fill-available;
   }
