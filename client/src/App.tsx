@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiSend, FiTrash2, FiShare2 } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiShare2, FiGithub } from 'react-icons/fi';
 import { ImSpinner8 } from 'react-icons/im';
 import { RiRobot2Fill } from 'react-icons/ri';
 
@@ -29,8 +29,28 @@ function App() {
     return newSessionId;
   });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Handle viewport height changes (for mobile browsers, especially iOS Safari)
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Set initial viewport height
+    setVH();
+
+    // Update on resize and orientation change
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+
+    return () => {
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
+    };
+  }, []);
 
   // Load saved messages when component mounts
   useEffect(() => {
@@ -322,7 +342,7 @@ function App() {
       </div>
 
       {/* Input area */}
-      <div className="bg-gray-800 border-t border-gray-700 p-4 w-full">
+      <div className="bg-gray-800 border-t border-gray-700 p-4 pb-2 w-full">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto w-full">
           <div className="relative flex items-center w-full">
             <textarea
@@ -350,8 +370,19 @@ function App() {
               )}
             </button>
           </div>
-          <p className="text-xs text-gray-400 mt-2 mb-0 text-center">
+          <p className="text-xs text-gray-400 mt-2 mb-0 text-center flex justify-center items-center">
             Press Enter to send. Responses are intentionally unhelpful.
+          </p>
+          <p className="text-xs text-gray-400 mt-2 mb-0 text-center flex justify-center items-center">
+          <a 
+              href="https://github.com/oboshto/dumbgpt" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center ml-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              title="View source code on GitHub"
+            >
+              <FiGithub className="mr-1 flex-shrink-0" style={{ marginTop: '2px' }} size={10} /> <span>Open Source</span>
+            </a>
           </p>
         </form>
       </div>
