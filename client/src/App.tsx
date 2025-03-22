@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiSend, FiTrash2, FiShare2, FiGithub, FiTwitter } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiShare2, FiGithub } from 'react-icons/fi';
 import { FaXTwitter } from "react-icons/fa6";
 import { ImSpinner8 } from 'react-icons/im';
-// import { RiRobot2Fill } from 'react-icons/ri';
 import robotLogo from './assets/logo.svg';
 
 // Environmental variables
@@ -244,7 +243,7 @@ function App() {
       <header className="bg-gray-800 border-b border-gray-700 py-3 px-6 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center h-9 w-9 bg-blue-600 rounded-lg">
-            <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full" />
+            <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full rounded-lg" />
           </div>
           <h1 className="text-xl font-bold text-gray-100">DumbGPT</h1>
         </div>
@@ -278,7 +277,7 @@ function App() {
             <div className="h-full flex flex-col items-center justify-center min-h-[70vh]">
               <div className="text-center p-6 max-w-md mx-auto">
                 <div className="mx-auto w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
-                  <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full" />
+                  <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full rounded-lg" />
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-100 mb-2">Welcome to DumbGPT</h2>
                 <p className="text-gray-400 mb-4">
