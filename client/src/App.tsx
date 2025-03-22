@@ -28,51 +28,19 @@ function App() {
 
   // Handle Safari mobile toolbar issues
   useEffect(() => {
-    // Function to update visual viewport height
-    const handleVisualViewport = () => {
-      // Set the viewport height
+    // Единственное что нужно - это установить высоту viewport
+    const setViewportHeight = () => {
+      // Этот код сохраняем для других аспектов адаптивности
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
-      
-      // Handle soft keyboard appearance - important for input focusing
-      if ('visualViewport' in window) {
-        //@ts-ignore - TS doesn't recognize visualViewport
-        const viewportHeight = window.visualViewport.height;
-        
-        // Check if keyboard is likely open (viewport height significantly reduced)
-        const keyboardOpen = viewportHeight < window.innerHeight * 0.75;
-        
-        // Apply a class to the body when keyboard is open
-        if (keyboardOpen) {
-          document.body.classList.add('keyboard-open');
-        } else {
-          document.body.classList.remove('keyboard-open');
-        }
-      }
     };
-    
-    // Initial call
-    handleVisualViewport();
-    
-    // Add event listeners for resize and scroll
-    window.addEventListener('resize', handleVisualViewport);
-    
-    // iOS Safari specific events for when toolbar shows/hides
-    if ('visualViewport' in window) {
-      //@ts-ignore - TS doesn't recognize visualViewport
-      window.visualViewport.addEventListener('resize', handleVisualViewport);
-      //@ts-ignore - TS doesn't recognize visualViewport
-      window.visualViewport.addEventListener('scroll', handleVisualViewport);
-    }
+
+    // Вызываем при изменении размера окна
+    window.addEventListener('resize', setViewportHeight);
+    setViewportHeight();
     
     return () => {
-      window.removeEventListener('resize', handleVisualViewport);
-      if ('visualViewport' in window) {
-        //@ts-ignore - TS doesn't recognize visualViewport
-        window.visualViewport.removeEventListener('resize', handleVisualViewport);
-        //@ts-ignore - TS doesn't recognize visualViewport
-        window.visualViewport.removeEventListener('scroll', handleVisualViewport);
-      }
+      window.removeEventListener('resize', setViewportHeight);
     };
   }, []);
 
@@ -245,7 +213,7 @@ function App() {
     window.location.reload(); // Reload to ensure clean state
   };
 
-  // Handle key press (Ctrl+Enter to submit)
+  // Handle key press (Enter to submit)
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -366,7 +334,7 @@ function App() {
       </div>
 
       {/* Input area */}
-      <div className="bg-gray-800 border-t border-gray-700 p-4 pb-2 w-full">
+      <div className="input-container">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto w-full">
           <div className="relative flex items-center w-full">
             <textarea

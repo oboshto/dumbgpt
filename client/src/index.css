@@ -6,7 +6,6 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  --vh: 1vh;  /* Initial value, will be updated by JS */
 
   color-scheme: light dark;
 
@@ -27,8 +26,6 @@ html, body, #root {
 body {
   margin: 0;
   display: flex;
-  min-height: 100vh;
-  min-width: 100vw;
   background-color: #1a1a1a;
   color: white;
 }
@@ -36,7 +33,6 @@ body {
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   width: 100%;
 }
 
@@ -86,74 +82,26 @@ button:focus-visible {
   }
 }
 
-/* Fixed height using viewport units for mobile browsers */
-.flex-col.h-screen {
-  height: 100vh; /* Fallback */
-  height: calc(var(--vh, 1vh) * 100); /* Mobile fix */
+/* Простые стили для контейнеров */
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Special handling for iOS Safari */
+.input-container {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(31, 41, 55);
+  border-top: 1px solid rgb(55, 65, 81);
+  padding: 1rem;
+  z-index: 10;
+}
+
+/* Фиксы для iOS */
 @supports (-webkit-touch-callout: none) {
-  /* Prevent content from being hidden behind the toolbar */
-  .flex-col.h-screen {
-    height: 100vh; /* Fallback */
-    height: calc(var(--vh, 1vh) * 100);
+  textarea, input {
+    font-size: 16px; /* Предотвращает зум на iOS */
   }
-  
-  /* Apply padding to input area */
-  .bg-gray-800.border-t.border-gray-700.p-4.pb-2.w-full {
-    padding-bottom: env(safe-area-inset-bottom, 20px) !important;
-  }
-  
-  html, body {
-    height: -webkit-fill-available;
-  }
-  
-  #root {
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-  }
-}
-
-/* iOS keyboard handling */
-.keyboard-open .flex-col.h-screen {
-  /* When keyboard is open, use fixed positioning to prevent the input from moving up */
-  height: 100% !important;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-}
-
-.keyboard-open .bg-gray-800.border-t.border-gray-700.p-4.pb-2.w-full {
-  /* Keep the input field visible when keyboard is open */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background-color: rgb(31, 41, 55); /* bg-gray-800 */
-  /* Prevent iOS Safari from scrolling the input field */
-  transform: translateZ(0);
-}
-
-/* Make sure the message list doesn't get hidden behind the fixed input */
-.keyboard-open .flex-1.overflow-y-auto.p-4.md\:p-6.w-full.chat-container {
-  padding-bottom: 120px; /* Increased to ensure more space for the fixed input */
-  -webkit-overflow-scrolling: touch; /* Improve scrolling on iOS */
-}
-
-/* Prevent automatic scrolling in iOS Safari */
-input, textarea {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font-size: 16px; /* iOS won't zoom if font size is at least 16px */
 }
