@@ -122,13 +122,14 @@ button:focus-visible {
 
 /* iOS keyboard handling */
 .keyboard-open .flex-col.h-screen {
-  /* When keyboard is open, use absolute positioning to prevent the input from moving up */
-  height: auto !important;
-  position: absolute;
+  /* When keyboard is open, use fixed positioning to prevent the input from moving up */
+  height: 100% !important;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
 }
 
 .keyboard-open .bg-gray-800.border-t.border-gray-700.p-4.pb-2.w-full {
@@ -139,9 +140,20 @@ button:focus-visible {
   right: 0;
   z-index: 1000;
   background-color: rgb(31, 41, 55); /* bg-gray-800 */
+  /* Prevent iOS Safari from scrolling the input field */
+  transform: translateZ(0);
 }
 
 /* Make sure the message list doesn't get hidden behind the fixed input */
 .keyboard-open .flex-1.overflow-y-auto.p-4.md\:p-6.w-full.chat-container {
-  padding-bottom: 80px;
+  padding-bottom: 120px; /* Increased to ensure more space for the fixed input */
+  -webkit-overflow-scrolling: touch; /* Improve scrolling on iOS */
+}
+
+/* Prevent automatic scrolling in iOS Safari */
+input, textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px; /* iOS won't zoom if font size is at least 16px */
 }
