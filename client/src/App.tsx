@@ -28,14 +28,11 @@ function App() {
 
   // Handle Safari mobile toolbar issues
   useEffect(() => {
-    // Единственное что нужно - это установить высоту viewport
     const setViewportHeight = () => {
-      // Этот код сохраняем для других аспектов адаптивности
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    // Вызываем при изменении размера окна
     window.addEventListener('resize', setViewportHeight);
     setViewportHeight();
     
@@ -235,7 +232,7 @@ function App() {
           <div className="relative group">
             <button
               onClick={shareConversation}
-              className="flex items-center gap-1 px-3 py-1 text-gray-300 rounded-md hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-1 px-3 py-1 text-gray-300 rounded-md hover:bg-blue-700 bg-blue-900 transition-colors"
               title={shareTooltip}
             >
               <FiShare2 /> Share
@@ -246,7 +243,7 @@ function App() {
           </div>
           <button
             onClick={clearConversation}
-            className="flex items-center gap-1 px-3 py-1 text-gray-300 rounded-md hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-1 px-3 py-1 text-gray-300 rounded-md hover:bg-blue-700 bg-blue-900 transition-colors"
             title="Clear conversation"
           >
             <FiTrash2 /> Clear
@@ -334,7 +331,7 @@ function App() {
       </div>
 
       {/* Input area */}
-      <div className="input-container">
+      <div className="input-container p-4 pb-2">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto w-full">
           <div className="relative flex items-center w-full">
             <textarea
