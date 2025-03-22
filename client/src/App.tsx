@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FiSend, FiTrash2, FiShare2, FiGithub } from 'react-icons/fi';
+import { FaXTwitter } from "react-icons/fa6";
 import { ImSpinner8 } from 'react-icons/im';
 import { RiRobot2Fill } from 'react-icons/ri';
 
@@ -300,6 +301,21 @@ function App() {
                   </ul>
                 </div>
 
+                {/* Social links */}
+                <div className="mt-4 flex justify-center items-center bg-gray-800 p-3 rounded-lg">
+                  <p className="text-sm text-gray-300 mr-3">Follow us:</p>
+                  <a 
+                    href="https://x.com/dumbGPTapp" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center text-gray-300 hover:text-blue-400 transition-colors"
+                    title="Follow us on X"
+                  >
+                    <FaXTwitter className="mr-1" size={16} /> 
+                    <span>@dumbGPTapp</span>
+                  </a>
+                </div>
+
                 {/* Disclaimer */}
                 <div className="mt-8 text-xs text-gray-500 bg-gray-800 p-3 rounded-lg border border-gray-700">
                   <p className="font-medium mb-1">⚠️ Disclaimer</p>
@@ -389,6 +405,16 @@ function App() {
               title="View source code on GitHub"
             >
               <FiGithub className="mr-1 flex-shrink-0" style={{ marginTop: '2px' }} size={10} /> <span>Open Source</span>
+            </a>
+            <span className="mx-2">•</span>
+            <a 
+              href="https://x.com/dumbGPTapp" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              title="Follow us on X"
+            >
+              <FaXTwitter className="mr-1 flex-shrink-0" style={{ marginTop: '2px' }} size={10} /> <span>Follow</span>
             </a>
           </p>
         </form>

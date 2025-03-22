@@ -9,6 +9,10 @@ DumbGPT is a parody AI chatbot that deliberately gives nonsensical and absurd an
 - 🎭 Full-fledged AI trained to provide ridiculous answers
 - 🚀 Stack: TypeScript, React, Express, Tailwind CSS, OpenAI API
 
+## Follow Us
+
+- 🐦 Follow DumbGPT on [Twitter](https://x.com/dumbGPTapp) for updates and the most ridiculous AI conversations
+
 ## Installation and Setup
 
 ### Prerequisites
