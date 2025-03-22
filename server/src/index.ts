@@ -45,46 +45,25 @@ const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   standardHeaders: true,
-  message: { error: 'Too many requests from this IP, please try again later' },
+  message: { error: 'Too many requests, please try again later' },
   keyGenerator: (req) => {
-    return req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+    // Default to IP if no session ID
+    const sessionId = req.body?.sessionId || req.query?.sessionId;
+    return sessionId || req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
   }
 });
 
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 5, // Limit each IP to 5 chat requests per minute
+  max: 5, // Limit each session to 5 chat requests per minute
   standardHeaders: true,
   message: { error: 'Chat request limit exceeded, please try again later' },
   keyGenerator: (req) => {
-    return req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+    // Default to IP if no session ID
+    const sessionId = req.body?.sessionId;
+    return sessionId || req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
   }
 });
-
-// Apply rate limiting to all API routes
-app.use('/api/', apiLimiter);
-app.use('/api/chat', chatLimiter);
-
-// Simple in-memory storage for chat sessions
-const chatSessions = new Map<string, ChatMessage[]>();
-
-// Usage tracking per session
-const sessionUsage = new Map<string, SessionUsage>();
-
-// Reset daily counters at midnight
-setInterval(() => {
-  const now = new Date();
-  sessionUsage.forEach((usage, sessionId) => {
-    // If last reset was yesterday or earlier
-    if (usage.dailyReset.getDate() !== now.getDate() || 
-        usage.dailyReset.getMonth() !== now.getMonth() || 
-        usage.dailyReset.getFullYear() !== now.getFullYear()) {
-      usage.messageCount = 0;
-      usage.dailyReset = now;
-      console.log(`Reset daily usage for session ${sessionId}`);
-    }
-  });
-}, 60 * 60 * 1000); // Check every hour
 
 // Logging middleware for all requests
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -108,6 +87,40 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   next();
 });
+
+// Apply rate limiting to all API routes
+app.use('/api/', (req, res, next) => {
+  const keyValue = req.body?.sessionId || req.query?.sessionId || req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  console.log(`Rate limiting key for API request: ${keyValue}`);
+  apiLimiter(req, res, next);
+});
+
+app.use('/api/chat', (req, res, next) => {
+  const keyValue = req.body?.sessionId || req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  console.log(`Rate limiting key for chat request: ${keyValue}`);
+  chatLimiter(req, res, next);
+});
+
+// Simple in-memory storage for chat sessions
+const chatSessions = new Map<string, ChatMessage[]>();
+
+// Usage tracking per session
+const sessionUsage = new Map<string, SessionUsage>();
+
+// Reset daily counters at midnight
+setInterval(() => {
+  const now = new Date();
+  sessionUsage.forEach((usage, sessionId) => {
+    // If last reset was yesterday or earlier
+    if (usage.dailyReset.getDate() !== now.getDate() || 
+        usage.dailyReset.getMonth() !== now.getMonth() || 
+        usage.dailyReset.getFullYear() !== now.getFullYear()) {
+      usage.messageCount = 0;
+      usage.dailyReset = now;
+      console.log(`Reset daily usage for session ${sessionId}`);
+    }
+  });
+}, 60 * 60 * 1000); // Check every hour
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
