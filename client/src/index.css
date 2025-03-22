@@ -87,8 +87,17 @@ button:focus-visible {
 
 /* Fix for iOS Safari viewport issues */
 @supports (-webkit-touch-callout: none) {
-  .chat-container {
-    /* The height of iOS address bar is around 44px plus some extra padding */
-    padding-bottom: 100px !important;
+  html, body {
+    height: -webkit-fill-available;
+  }
+  
+  #root {
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
   }
 }
