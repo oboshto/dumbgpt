@@ -45,14 +45,20 @@ const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   standardHeaders: true,
-  message: { error: 'Too many requests from this IP, please try again later' }
+  message: { error: 'Too many requests from this IP, please try again later' },
+  keyGenerator: (req) => {
+    return req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+  }
 });
 
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // Limit each IP to 5 chat requests per minute
   standardHeaders: true,
-  message: { error: 'Chat request limit exceeded, please try again later' }
+  message: { error: 'Chat request limit exceeded, please try again later' },
+  keyGenerator: (req) => {
+    return req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+  }
 });
 
 // Apply rate limiting to all API routes
@@ -84,8 +90,9 @@ setInterval(() => {
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   const requestId = Math.random().toString(36).substring(2, 10);
+  const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
   
-  console.log(`[${new Date().toISOString()}] [${requestId}] 🔄 ${req.method} ${req.originalUrl}`);
+  console.log(`[${new Date().toISOString()}] [${requestId}] 🔄 ${req.method} ${req.originalUrl} from IP: ${clientIp}`);
   if (req.method !== 'GET') {
     console.log(`[${new Date().toISOString()}] [${requestId}] 📦 Request body:`, req.body);
   }
@@ -135,7 +142,9 @@ const contentFilterMiddleware = (req: Request, res: Response, next: NextFunction
 // Chat completion endpoint with additional protections
 app.post('/api/chat', contentFilterMiddleware, async (req: Request<{}, {}, ChatRequest>, res: Response) => {
   const { message, sessionId = 'default' } = req.body;
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const ip = req.ip || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+  
+  console.log(`Request from IP: ${ip}`);
   
   if (!message) {
     console.error('Invalid request: Message is missing');
