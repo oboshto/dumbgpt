@@ -1,0 +1,22 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#2563eb"/>
+  
+  <!-- Robot head -->
+  <rect x="100" y="120" width="200" height="200" rx="30" ry="30" fill="white"/>
+  
+  <!-- Left eye -->
+  <circle cx="160" cy="220" r="25" fill="#2563eb"/>
+  
+  <!-- Right eye -->
+  <circle cx="240" cy="220" r="25" fill="#2563eb"/>
+  
+  <!-- Left antenna -->
+  <rect x="68" y="190" width="30" height="60" rx="5" ry="5" fill="white"/>
+  
+  <!-- Right antenna -->
+  <rect x="302" y="190" width="30" height="60" rx="5" ry="5" fill="white"/>
+  
+  <!-- Broken antenna -->
+  <path d="M200 120 L200 90 L185 65 L170 75" stroke="white" stroke-width="15" fill="none"/>
+</svg> 
