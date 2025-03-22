@@ -16,8 +16,6 @@ const openai = new OpenAI({
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Set trust proxy для корректной работы с X-Forwarded-For заголовком за прокси-сервером
 app.set('trust proxy', 1);
 
 // Define port
