@@ -119,3 +119,29 @@ button:focus-visible {
     overflow: hidden;
   }
 }
+
+/* iOS keyboard handling */
+.keyboard-open .flex-col.h-screen {
+  /* When keyboard is open, use absolute positioning to prevent the input from moving up */
+  height: auto !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.keyboard-open .bg-gray-800.border-t.border-gray-700.p-4.pb-2.w-full {
+  /* Keep the input field visible when keyboard is open */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: rgb(31, 41, 55); /* bg-gray-800 */
+}
+
+/* Make sure the message list doesn't get hidden behind the fixed input */
+.keyboard-open .flex-1.overflow-y-auto.p-4.md\:p-6.w-full.chat-container {
+  padding-bottom: 80px;
+}

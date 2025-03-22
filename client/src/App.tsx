@@ -30,8 +30,25 @@ function App() {
   useEffect(() => {
     // Function to update visual viewport height
     const handleVisualViewport = () => {
+      // Set the viewport height
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
+      
+      // Handle soft keyboard appearance - important for input focusing
+      if ('visualViewport' in window) {
+        //@ts-ignore - TS doesn't recognize visualViewport
+        const viewportHeight = window.visualViewport.height;
+        
+        // Check if keyboard is likely open (viewport height significantly reduced)
+        const keyboardOpen = viewportHeight < window.innerHeight * 0.75;
+        
+        // Apply a class to the body when keyboard is open
+        if (keyboardOpen) {
+          document.body.classList.add('keyboard-open');
+        } else {
+          document.body.classList.remove('keyboard-open');
+        }
+      }
     };
     
     // Initial call
