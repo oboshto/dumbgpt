@@ -167,11 +167,26 @@ function App() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get response from server');
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        // Обработка разных типов ошибок от сервера
+        let errorContent = 'Oh no! I had a major brain malfunction. Try asking again later!';
+        
+        if (response.status === 429) {
+          // Rate limiting или превышение дневного лимита
+          errorContent = `${data.error || 'Rate limit exceeded!'} 🚦 I'm getting too many requests. ` +
+            `Try again later or tomorrow if you've reached your daily limit.`;
+        } else if (response.status === 400) {
+          // Неверный запрос (слишком длинное сообщение и т.д.)
+          errorContent = `${data.error || 'Invalid request!'} 📏 Try sending a shorter message or changing your input.`;
+        } else if (response.status === 403) {
+          // Запрещенный контент
+          errorContent = `${data.error || 'Potential harmful content detected!'} 🛑 Your message may contain forbidden patterns.`;
+        }
+        
+        throw new Error(errorContent);
+      }
 
       // Add assistant message
       const assistantMessage: Message = {
@@ -185,10 +200,14 @@ function App() {
     } catch (error) {
       console.error('Error fetching response:', error);
 
+      // Получаем текст ошибки или используем стандартный текст
+      const errorText = error instanceof Error ? error.message : 
+        'Oh no! I had a major brain malfunction while trying to respond. Perhaps the cosmic rays interfered with my neural oscillators. Try asking again - maybe the alignment of the planets will be more favorable this time!';
+
       // Add error message from assistant
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Oh no! I had a major brain malfunction while trying to respond. Perhaps the cosmic rays interfered with my neural oscillators. Try asking again - maybe the alignment of the planets will be more favorable this time!',
+        content: errorText,
         role: 'assistant',
         timestamp: new Date(),
       };

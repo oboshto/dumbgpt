@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { OpenAI } from 'openai';
+import rateLimit from 'express-rate-limit';
 
 // Load environment variables
 dotenv.config();
@@ -30,8 +31,53 @@ interface ChatRequest {
   sessionId?: string;
 }
 
+interface SessionUsage {
+  messageCount: number;
+  totalTokens: number;
+  lastRequest: Date;
+  dailyReset: Date;
+  ipAddresses: Set<string>;
+}
+
+// Rate limiting middleware
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  message: { error: 'Too many requests from this IP, please try again later' }
+});
+
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // Limit each IP to 5 chat requests per minute
+  standardHeaders: true,
+  message: { error: 'Chat request limit exceeded, please try again later' }
+});
+
+// Apply rate limiting to all API routes
+app.use('/api/', apiLimiter);
+app.use('/api/chat', chatLimiter);
+
 // Simple in-memory storage for chat sessions
 const chatSessions = new Map<string, ChatMessage[]>();
+
+// Usage tracking per session
+const sessionUsage = new Map<string, SessionUsage>();
+
+// Reset daily counters at midnight
+setInterval(() => {
+  const now = new Date();
+  sessionUsage.forEach((usage, sessionId) => {
+    // If last reset was yesterday or earlier
+    if (usage.dailyReset.getDate() !== now.getDate() || 
+        usage.dailyReset.getMonth() !== now.getMonth() || 
+        usage.dailyReset.getFullYear() !== now.getFullYear()) {
+      usage.messageCount = 0;
+      usage.dailyReset = now;
+      console.log(`Reset daily usage for session ${sessionId}`);
+    }
+  });
+}, 60 * 60 * 1000); // Check every hour
 
 // Logging middleware for all requests
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -61,10 +107,34 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', message: 'Dumb-GPT server is running' });
 });
 
-// Chat completion endpoint
-// @ts-ignore: Express types issue
-app.post('/api/chat', async (req: Request<{}, {}, ChatRequest>, res: Response) => {
+const contentFilterMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const { message } = req.body;
+  
+  if (message && message.length > 500) {
+    return res.status(400).json({ 
+      error: 'Message too long. Please limit your input to 500 characters.' 
+    });
+  }
+  
+  const forbiddenPatterns = [
+    /script\s*>/i, 
+    /{{\s*.*\s*}}/i, 
+    /^\s*select\s+.+\s+from/i,
+  ];
+  
+  if (forbiddenPatterns.some(pattern => pattern.test(message))) {
+    return res.status(403).json({ 
+      error: 'Potentially harmful content detected'
+    });
+  }
+  
+  next();
+};
+
+// Chat completion endpoint with additional protections
+app.post('/api/chat', contentFilterMiddleware, async (req: Request<{}, {}, ChatRequest>, res: Response) => {
   const { message, sessionId = 'default' } = req.body;
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
   
   if (!message) {
     console.error('Invalid request: Message is missing');
@@ -73,6 +143,37 @@ app.post('/api/chat', async (req: Request<{}, {}, ChatRequest>, res: Response) =
 
   console.log(`Processing chat request with message length: ${message.length} characters`);
   console.log(`Session ID: ${sessionId}`);
+
+  // Track usage per session
+  if (!sessionUsage.has(sessionId)) {
+    sessionUsage.set(sessionId, {
+      messageCount: 0,
+      totalTokens: 0,
+      lastRequest: new Date(),
+      dailyReset: new Date(),
+      ipAddresses: new Set([ip])
+    });
+  } else {
+    // Add IP to the session's set of IPs
+    const usage = sessionUsage.get(sessionId)!;
+    usage.ipAddresses.add(ip);
+    
+    if (usage.ipAddresses.size > 5) {
+      console.warn(`Session ${sessionId} accessed from ${usage.ipAddresses.size} different IPs - suspicious activity`);
+    }
+  }
+  
+  const usage = sessionUsage.get(sessionId)!;
+  
+  // Check daily limits
+  const dailyMessageLimit = 50; // Adjust as needed
+  if (usage.messageCount >= dailyMessageLimit) {
+    return res.status(429).json({
+      error: 'Daily message limit reached. Please try again tomorrow.',
+      limit: dailyMessageLimit,
+      used: usage.messageCount
+    });
+  }
 
   // Initialize session if it doesn't exist
   if (!chatSessions.has(sessionId)) {
@@ -90,9 +191,9 @@ app.post('/api/chat', async (req: Request<{}, {}, ChatRequest>, res: Response) =
   // Add user message to history
   sessionMessages.push({ role: "user", content: message });
   
-  // Keep only last 10 messages (plus system prompt) to control costs
+  // Keep only last 6 messages (plus system prompt) to control costs
   if (sessionMessages.length > 7) {
-    // Keep system message at index 0, and last 10 messages
+    // Keep system message at index 0, and last 6 messages
     sessionMessages.splice(1, sessionMessages.length - 7);
   }
 
@@ -113,6 +214,11 @@ app.post('/api/chat', async (req: Request<{}, {}, ChatRequest>, res: Response) =
     
     const responseContent = completion.choices[0].message.content;
     console.log(`Generated response with length: ${responseContent?.length || 0} characters`);
+    
+    // Update usage statistics
+    usage.messageCount++;
+    usage.totalTokens += completion.usage?.total_tokens || 0;
+    usage.lastRequest = new Date();
     
     // Save assistant response to history
     sessionMessages.push({ 
@@ -146,9 +252,10 @@ app.listen(PORT, () => {
   🌐 Server URL: http://localhost:${PORT}
   🔑 API Key Status: ${process.env.OPENAI_API_KEY ? 'Configured' : 'MISSING'}
   🕒 Server started at: ${new Date().toLocaleString()}
+  🛡️ Security features: Rate limiting, content filtering
   
   Available endpoints:
-  - GET  /api/health - Health check endpoint
-  - POST /api/chat   - Chat completion endpoint
+  - GET  /api/health       - Health check endpoint
+  - POST /api/chat         - Chat completion endpoint
   `);
 });
