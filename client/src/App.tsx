@@ -4,6 +4,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { ImSpinner8 } from "react-icons/im";
 import robotLogo from "./assets/logo.svg";
 import YandexMetrika from "./components/YandexMetrika";
+import { useYandexMetrika } from "./hooks/useYandexMetrika";
 
 // Environmental variables
 const API_URL = import.meta.env.VITE_API_URL || "https://api.dumbgpt.xyz";
@@ -27,6 +28,9 @@ function App() {
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Yandex Metrika hook
+  const { sendEvent } = useYandexMetrika();
 
   // Handle Safari mobile toolbar issues
   useEffect(() => {
@@ -55,11 +59,17 @@ function App() {
           timestamp: new Date(msg.timestamp),
         }));
         setMessages(processedMessages);
+
+        // Track returning user
+        sendEvent("user_return", { messagesCount: processedMessages.length });
       } catch (error) {
         console.error("Failed to load saved messages:", error);
       }
+    } else {
+      // Track first visit
+      sendEvent("first_visit", { sessionId });
     }
-  }, []);
+  }, [sendEvent, sessionId]);
 
   // Save messages to localStorage when they change
   useEffect(() => {
@@ -91,6 +101,9 @@ function App() {
     setInput(exampleText);
     inputRef.current?.focus();
 
+    // Track example click
+    sendEvent("example_clicked", { exampleText });
+
     // Auto-resize textarea after setting new content
     setTimeout(() => {
       if (inputRef.current) {
@@ -116,6 +129,9 @@ function App() {
           url: shareUrl,
         });
         setShareTooltip("Shared successfully!");
+
+        // Track successful share
+        sendEvent("share_success", { method: "web_share_api" });
       } catch (err) {
         console.error("Error sharing:", err);
         // If user cancelled, don't show error
@@ -133,6 +149,10 @@ function App() {
           `${shareTitle}\n\n${shareText}\n\n${shareUrl}`
         );
         setShareTooltip("Copied to clipboard!");
+
+        // Track successful clipboard copy
+        sendEvent("share_success", { method: "clipboard" });
+
         setTimeout(() => setShareTooltip("Share DumbGPT"), 2000);
       } catch (err) {
         console.error("Failed to copy:", err);
@@ -158,6 +178,12 @@ function App() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+
+    // Track message sent event
+    sendEvent("message_sent", {
+      messageLength: userMessage.content.length,
+      sessionId: sessionId,
+    });
 
     try {
       // Call API with session ID
@@ -234,6 +260,12 @@ function App() {
 
   // Clear conversation
   const clearConversation = () => {
+    // Track clear conversation event
+    sendEvent("conversation_cleared", {
+      messagesCount: messages.length,
+      sessionId: sessionId,
+    });
+
     setMessages([]);
     localStorage.removeItem("dumbgpt-messages");
 

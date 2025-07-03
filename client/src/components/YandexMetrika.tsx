@@ -7,7 +7,7 @@ interface YandexMetrikaProps {
 // Declare global ym function
 declare global {
   interface Window {
-    ym: (id: number, method: string, params?: Record<string, any>) => void;
+    ym: (id: number, method: string, params?: any) => void;
   }
 }
 
@@ -46,7 +46,8 @@ const YandexMetrika: React.FC<YandexMetrikaProps> = ({ id }) => {
       ym(${numericId}, "init", {
         clickmap:true,
         trackLinks:true,
-        accurateTrackBounce:true
+        accurateTrackBounce:true,
+        webvisor:true
       });
     `;
 
@@ -56,6 +57,15 @@ const YandexMetrika: React.FC<YandexMetrikaProps> = ({ id }) => {
     const noscript = document.createElement("noscript");
     noscript.innerHTML = `<div><img src="https://mc.yandex.ru/watch/${numericId}" style="position:absolute; left:-9999px;" alt="" /></div>`;
     document.head.appendChild(noscript);
+
+    // Send initial pageview after script loads
+    script.onload = () => {
+      if (window.ym && typeof window.ym === "function") {
+        // Send pageview for the current page
+        window.ym(numericId, "hit", window.location.href);
+        console.log("Yandex Metrika: Initial pageview sent");
+      }
+    };
 
     // Cleanup function
     return () => {
