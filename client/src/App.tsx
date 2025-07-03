@@ -1,24 +1,25 @@
-import { useState, useRef, useEffect } from 'react';
-import { FiSend, FiTrash2, FiShare2, FiGithub } from 'react-icons/fi';
+import { useState, useRef, useEffect } from "react";
+import { FiSend, FiTrash2, FiShare2, FiGithub } from "react-icons/fi";
 import { FaXTwitter } from "react-icons/fa6";
-import { ImSpinner8 } from 'react-icons/im';
-import robotLogo from './assets/logo.svg';
+import { ImSpinner8 } from "react-icons/im";
+import robotLogo from "./assets/logo.svg";
+import YandexMetrika from "./components/YandexMetrika";
 
 // Environmental variables
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.dumbgpt.xyz';
+const API_URL = import.meta.env.VITE_API_URL || "https://api.dumbgpt.xyz";
 
 interface Message {
   id: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
 }
 
 function App() {
-  const [input, setInput] = useState<string>('');
+  const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [shareTooltip, setShareTooltip] = useState<string>('Share DumbGPT');
+  const [shareTooltip, setShareTooltip] = useState<string>("Share DumbGPT");
   const [sessionId] = useState<string>(() => {
     const newSessionId = crypto.randomUUID();
     return newSessionId;
@@ -31,31 +32,31 @@ function App() {
   useEffect(() => {
     const setViewportHeight = () => {
       const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
     };
 
-    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener("resize", setViewportHeight);
     setViewportHeight();
-    
+
     return () => {
-      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener("resize", setViewportHeight);
     };
   }, []);
 
   // Load saved messages when component mounts
   useEffect(() => {
-    const savedMessages = localStorage.getItem('dumbgpt-messages');
+    const savedMessages = localStorage.getItem("dumbgpt-messages");
     if (savedMessages) {
       try {
         const parsedMessages = JSON.parse(savedMessages);
         // Convert string timestamps back to Date objects
         const processedMessages = parsedMessages.map((msg: any) => ({
           ...msg,
-          timestamp: new Date(msg.timestamp)
+          timestamp: new Date(msg.timestamp),
         }));
         setMessages(processedMessages);
       } catch (error) {
-        console.error('Failed to load saved messages:', error);
+        console.error("Failed to load saved messages:", error);
       }
     }
   }, []);
@@ -63,13 +64,13 @@ function App() {
   // Save messages to localStorage when they change
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem('dumbgpt-messages', JSON.stringify(messages));
+      localStorage.setItem("dumbgpt-messages", JSON.stringify(messages));
     }
   }, [messages]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Focus input field when component mounts or after messages update
@@ -80,7 +81,7 @@ function App() {
   // Auto-resize textarea
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.style.height = 'auto';
+      inputRef.current.style.height = "auto";
       inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
   }, [input]);
@@ -93,7 +94,7 @@ function App() {
     // Auto-resize textarea after setting new content
     setTimeout(() => {
       if (inputRef.current) {
-        inputRef.current.style.height = 'auto';
+        inputRef.current.style.height = "auto";
         inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
       }
     }, 0);
@@ -102,7 +103,8 @@ function App() {
   // Function to share link using Web Share API
   const shareConversation = async () => {
     const shareTitle = "DumbGPT - Unhelpful AI Assistant";
-    const shareText = "Check out DumbGPT - an intentionally unhelpful AI agent.";
+    const shareText =
+      "Check out DumbGPT - an intentionally unhelpful AI agent.";
     const shareUrl = window.location.origin;
 
     // Check if Web Share API is supported
@@ -111,29 +113,31 @@ function App() {
         await navigator.share({
           title: shareTitle,
           text: shareText,
-          url: shareUrl
+          url: shareUrl,
         });
-        setShareTooltip('Shared successfully!');
+        setShareTooltip("Shared successfully!");
       } catch (err) {
-        console.error('Error sharing:', err);
+        console.error("Error sharing:", err);
         // If user cancelled, don't show error
-        if (err instanceof Error && err.name !== 'AbortError') {
-          setShareTooltip('Failed to share');
+        if (err instanceof Error && err.name !== "AbortError") {
+          setShareTooltip("Failed to share");
         }
       } finally {
         // Reset tooltip after some time
-        setTimeout(() => setShareTooltip('Share DumbGPT'), 2000);
+        setTimeout(() => setShareTooltip("Share DumbGPT"), 2000);
       }
     } else {
       // Fallback for browsers that don't support Web Share API
       try {
-        await navigator.clipboard.writeText(`${shareTitle}\n\n${shareText}\n\n${shareUrl}`);
-        setShareTooltip('Copied to clipboard!');
-        setTimeout(() => setShareTooltip('Share DumbGPT'), 2000);
+        await navigator.clipboard.writeText(
+          `${shareTitle}\n\n${shareText}\n\n${shareUrl}`
+        );
+        setShareTooltip("Copied to clipboard!");
+        setTimeout(() => setShareTooltip("Share DumbGPT"), 2000);
       } catch (err) {
-        console.error('Failed to copy:', err);
-        setShareTooltip('Failed to copy');
-        setTimeout(() => setShareTooltip('Share DumbGPT'), 2000);
+        console.error("Failed to copy:", err);
+        setShareTooltip("Failed to copy");
+        setTimeout(() => setShareTooltip("Share DumbGPT"), 2000);
       }
     }
   };
@@ -147,68 +151,78 @@ function App() {
     const userMessage: Message = {
       id: Date.now().toString(),
       content: input.trim(),
-      role: 'user',
+      role: "user",
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    setInput("");
     setIsLoading(true);
 
     try {
       // Call API with session ID
       const response = await fetch(`${API_URL}/api/chat`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: userMessage.content,
-          sessionId: sessionId
+          sessionId: sessionId,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        let errorContent = 'Oh no! I had a major brain malfunction. Try asking again later!';
-        
+        let errorContent =
+          "Oh no! I had a major brain malfunction. Try asking again later!";
+
         if (response.status === 429) {
           // Rate limiting
-          errorContent = `${data.error || 'Rate limit exceeded!'} 🚦 I'm getting too many requests. ` +
+          errorContent =
+            `${
+              data.error || "Rate limit exceeded!"
+            } 🚦 I'm getting too many requests. ` +
             `Try again later or tomorrow if you've reached your daily limit.`;
         } else if (response.status === 400) {
           // Invalid request (too long message, etc.)
-          errorContent = `${data.error || 'Invalid request!'} 📏 Try sending a shorter message or changing your input.`;
+          errorContent = `${
+            data.error || "Invalid request!"
+          } 📏 Try sending a shorter message or changing your input.`;
         } else if (response.status === 403) {
           // Forbidden content
-          errorContent = `${data.error || 'Potential harmful content detected!'} 🛑 Your message may contain forbidden patterns.`;
+          errorContent = `${
+            data.error || "Potential harmful content detected!"
+          } 🛑 Your message may contain forbidden patterns.`;
         }
-        
+
         throw new Error(errorContent);
       }
 
       // Add assistant message
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response || 'Sorry, I couldn\'t generate a response',
-        role: 'assistant',
+        content: data.response || "Sorry, I couldn't generate a response",
+        role: "assistant",
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error fetching response:', error);
+      console.error("Error fetching response:", error);
 
       // Get error text or use default text
-      const errorText = error instanceof Error ? error.message : 
-        'Oh no! I had a major brain malfunction while trying to respond. Perhaps the cosmic rays interfered with my neural oscillators. Try asking again - maybe the alignment of the planets will be more favorable this time!';
+      const errorText =
+        error instanceof Error
+          ? error.message
+          : "Oh no! I had a major brain malfunction while trying to respond. Perhaps the cosmic rays interfered with my neural oscillators. Try asking again - maybe the alignment of the planets will be more favorable this time!";
 
       // Add error message from assistant
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: errorText,
-        role: 'assistant',
+        role: "assistant",
         timestamp: new Date(),
       };
 
@@ -221,17 +235,17 @@ function App() {
   // Clear conversation
   const clearConversation = () => {
     setMessages([]);
-    localStorage.removeItem('dumbgpt-messages');
+    localStorage.removeItem("dumbgpt-messages");
 
     // Generate a new session ID to start fresh
     const newSessionId = crypto.randomUUID();
-    localStorage.setItem('dumbgpt-session-id', newSessionId);
+    localStorage.setItem("dumbgpt-session-id", newSessionId);
     window.location.reload(); // Reload to ensure clean state
   };
 
   // Handle key press (Enter to submit)
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent);
     }
@@ -239,11 +253,18 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-gray-900 text-gray-100 overflow-hidden">
+      {/* Yandex Metrika */}
+      <YandexMetrika />
+
       {/* Header */}
       <header className="bg-gray-800 border-b border-gray-700 py-3 px-6 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center h-9 w-9 bg-blue-600 rounded-lg">
-            <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full rounded-lg" />
+            <img
+              src={robotLogo}
+              alt="DumbGPT Logo"
+              className="h-full w-full rounded-lg"
+            />
           </div>
           <h1 className="text-xl font-bold text-gray-100">DumbGPT</h1>
         </div>
@@ -277,41 +298,64 @@ function App() {
             <div className="h-full flex flex-col items-center justify-center min-h-[70vh]">
               <div className="text-center p-6 max-w-md mx-auto">
                 <div className="mx-auto w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
-                  <img src={robotLogo} alt="DumbGPT Logo" className="h-full w-full rounded-lg" />
+                  <img
+                    src={robotLogo}
+                    alt="DumbGPT Logo"
+                    className="h-full w-full rounded-lg"
+                  />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-100 mb-2">Welcome to DumbGPT</h2>
+                <h2 className="text-2xl font-semibold text-gray-100 mb-2">
+                  Welcome to DumbGPT
+                </h2>
                 <p className="text-gray-400 mb-4">
-                  I'm your unhelpful AI assistant, ready to provide nonsensical answers to all your questions!
+                  I'm your unhelpful AI assistant, ready to provide nonsensical
+                  answers to all your questions!
                 </p>
                 <div className="bg-gray-800 p-4 rounded-lg">
-                  <p className="text-sm text-gray-300 font-medium mb-2">Examples of what you can ask:</p>
+                  <p className="text-sm text-gray-300 font-medium mb-2">
+                    Examples of what you can ask:
+                  </p>
                   <ul className="text-sm text-gray-300 space-y-2">
                     <li
-                      onClick={() => handleExampleClick("How do I learn JavaScript?")}
+                      onClick={() =>
+                        handleExampleClick("How do I learn JavaScript?")
+                      }
                       className="bg-gray-700 p-2 rounded hover:bg-gray-600 cursor-pointer transition-colors"
-                    >"How do I learn JavaScript?"</li>
+                    >
+                      "How do I learn JavaScript?"
+                    </li>
                     <li
-                      onClick={() => handleExampleClick("Explain quantum computing to me")}
+                      onClick={() =>
+                        handleExampleClick("Explain quantum computing to me")
+                      }
                       className="bg-gray-700 p-2 rounded hover:bg-gray-600 cursor-pointer transition-colors"
-                    >"Explain quantum computing to me"</li>
+                    >
+                      "Explain quantum computing to me"
+                    </li>
                     <li
-                      onClick={() => handleExampleClick("What's the best way to stay productive?")}
+                      onClick={() =>
+                        handleExampleClick(
+                          "What's the best way to stay productive?"
+                        )
+                      }
                       className="bg-gray-700 p-2 rounded hover:bg-gray-600 cursor-pointer transition-colors"
-                    >"What's the best way to stay productive?"</li>
+                    >
+                      "What's the best way to stay productive?"
+                    </li>
                   </ul>
                 </div>
 
                 {/* Social links */}
                 <div className="mt-4 flex justify-center items-center bg-gray-800 p-3 rounded-lg">
                   <p className="text-sm text-gray-300 mr-3">Follow us:</p>
-                  <a 
-                    href="https://x.com/dumbGPTapp" 
-                    target="_blank" 
+                  <a
+                    href="https://x.com/dumbGPTapp"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-gray-300 hover:text-blue-400 transition-colors"
                     title="Follow us on X"
                   >
-                    <FaXTwitter className="mr-1" size={16} /> 
+                    <FaXTwitter className="mr-1" size={16} />
                     <span>@dumbGPTapp</span>
                   </a>
                 </div>
@@ -320,9 +364,11 @@ function App() {
                 <div className="mt-8 text-xs text-gray-500 bg-gray-800 p-3 rounded-lg border border-gray-700">
                   <p className="font-medium mb-1">⚠️ Disclaimer</p>
                   <p>
-                    DumbGPT is created for entertainment purposes only. The responses are intentionally nonsensical
-                    and should not be taken as advice or factual information. Any resemblance to actual
-                    intelligence, living or artificial, is purely coincidental.
+                    DumbGPT is created for entertainment purposes only. The
+                    responses are intentionally nonsensical and should not be
+                    taken as advice or factual information. Any resemblance to
+                    actual intelligence, living or artificial, is purely
+                    coincidental.
                   </p>
                 </div>
               </div>
@@ -332,20 +378,29 @@ function App() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`max-w-[85%] md:max-w-[75%] p-4 rounded-lg ${message.role === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-none'
-                        : 'bg-gray-700 text-gray-100 border border-gray-600 rounded-bl-none shadow-md'
-                      }`}
+                    className={`max-w-[85%] md:max-w-[75%] p-4 rounded-lg ${
+                      message.role === "user"
+                        ? "bg-blue-600 text-white rounded-br-none"
+                        : "bg-gray-700 text-gray-100 border border-gray-600 rounded-bl-none shadow-md"
+                    }`}
                   >
                     <p className="whitespace-pre-wrap">{message.content}</p>
                     <div
-                      className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-200' : 'text-gray-400'
-                        }`}
+                      className={`text-xs mt-2 ${
+                        message.role === "user"
+                          ? "text-blue-200"
+                          : "text-gray-400"
+                      }`}
                     >
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                   </div>
                 </div>
@@ -354,7 +409,9 @@ function App() {
                 <div className="flex justify-start">
                   <div className="bg-gray-700 text-gray-100 border border-gray-600 rounded-lg rounded-bl-none shadow-md p-4 flex items-center">
                     <ImSpinner8 className="animate-spin text-gray-400 mr-2" />
-                    <span className="text-gray-400">DumbGPT is thinking...</span>
+                    <span className="text-gray-400">
+                      DumbGPT is thinking...
+                    </span>
                   </div>
                 </div>
               )}
@@ -380,10 +437,11 @@ function App() {
             />
             <button
               type="submit"
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-white p-1.5 rounded-md ${isLoading || !input.trim()
-                  ? 'bg-gray-600 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-                }`}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-white p-1.5 rounded-md ${
+                isLoading || !input.trim()
+                  ? "bg-gray-600 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
               disabled={isLoading || !input.trim()}
             >
               {isLoading ? (
@@ -397,24 +455,34 @@ function App() {
             Press Enter to send. Responses are intentionally unhelpful.
           </p>
           <p className="text-xs text-gray-400 mt-2 mb-0 text-center flex justify-center items-center">
-          <a 
-              href="https://github.com/oboshto/dumbgpt" 
-              target="_blank" 
+            <a
+              href="https://github.com/oboshto/dumbgpt"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center ml-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
               title="View source code on GitHub"
             >
-              <FiGithub className="mr-1 flex-shrink-0" style={{ marginTop: '2px' }} size={10} /> <span>Open Source</span>
+              <FiGithub
+                className="mr-1 flex-shrink-0"
+                style={{ marginTop: "2px" }}
+                size={10}
+              />{" "}
+              <span>Open Source</span>
             </a>
             <span className="mx-2">•</span>
-            <a 
-              href="https://x.com/dumbGPTapp" 
-              target="_blank" 
+            <a
+              href="https://x.com/dumbGPTapp"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-xs text-gray-500 hover:text-gray-300 transition-colors"
               title="Follow us on X"
             >
-              <FaXTwitter className="mr-1 flex-shrink-0" style={{ marginTop: '2px' }} size={10} /> <span>Follow</span>
+              <FaXTwitter
+                className="mr-1 flex-shrink-0"
+                style={{ marginTop: "2px" }}
+                size={10}
+              />{" "}
+              <span>Follow</span>
             </a>
           </p>
         </form>

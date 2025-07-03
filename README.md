@@ -11,7 +11,7 @@ DumbGPT is a parody AI chatbot that deliberately gives nonsensical and absurd an
 
 ## Follow Us
 
-- 🐦 Follow DumbGPT on [Twitter](https://x.com/dumbGPTapp) for updates and the most ridiculous AI conversations
+- 🐦 Follow DumbGPT on [X.com](https://x.com/dumbGPTapp) for updates and the most ridiculous AI conversations
 
 ## Installation and Setup
 
