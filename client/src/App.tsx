@@ -381,14 +381,14 @@ function App() {
                 <div className="mt-4 flex justify-center items-center bg-gray-800 p-3 rounded-lg">
                   <p className="text-sm text-gray-300 mr-3">Follow us:</p>
                   <a
-                    href="https://x.com/dumbGPTapp"
+                    href="https://x.com/GptDumb"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-gray-300 hover:text-blue-400 transition-colors"
                     title="Follow us on X"
                   >
                     <FaXTwitter className="mr-1" size={16} />
-                    <span>@dumbGPTapp</span>
+                    <span>@GptDumb</span>
                   </a>
                 </div>
 
@@ -503,11 +503,11 @@ function App() {
             </a>
             <span className="mx-2">•</span>
             <a
-              href="https://x.com/dumbGPTapp"
+              href="https://x.com/GptDumb"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              title="Follow us on X"
+              title="Follow on X"
             >
               <FaXTwitter
                 className="mr-1 flex-shrink-0"

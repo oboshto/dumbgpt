@@ -11,7 +11,7 @@ DumbGPT is a parody AI chatbot that deliberately gives nonsensical and absurd an
 
 ## Follow Us
 
-- 🐦 Follow DumbGPT on [X.com](https://x.com/dumbGPTapp) for updates and the most ridiculous AI conversations
+- 🐦 Follow DumbGPT on [X.com](https://x.com/GptDumb) for updates and the most ridiculous AI conversations
 
 ## Installation and Setup
 
@@ -25,13 +25,16 @@ DumbGPT is a parody AI chatbot that deliberately gives nonsensical and absurd an
 
 1. Clone the repository
 2. Configure environment variables:
+
    ```
    cd server
    cp .env.example .env
    ```
+
    Edit the `.env` file and add your OpenAI API key
 
 3. Install dependencies for server and client:
+
    ```
    # Install server dependencies
    cd server
@@ -45,12 +48,14 @@ DumbGPT is a parody AI chatbot that deliberately gives nonsensical and absurd an
 ### Running the Application
 
 1. Start the server:
+
    ```
    cd server
    npm run dev
    ```
 
 2. In a separate terminal, start the client:
+
    ```
    cd client
    npm run dev
@@ -65,12 +70,14 @@ DumbGPT uses the OpenAI API with a special system instruction that makes the mod
 ## Technologies
 
 ### Frontend
+
 - TypeScript
 - React
 - Tailwind CSS
 - Vite
 
 ### Backend
+
 - TypeScript
 - Express
 - OpenAI API
