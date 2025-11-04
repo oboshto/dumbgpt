@@ -102,3 +102,17 @@ button:focus-visible {
     font-size: 16px;
   }
 }
+
+/* Custom Solana token animations */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 30px rgba(236, 72, 153, 0.6);
+  }
+}
+
+.solana-glow {
+  animation: glow 3s ease-in-out infinite;
+}

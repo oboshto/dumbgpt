@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { FiSend, FiTrash2, FiShare2, FiGithub } from "react-icons/fi";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaXTwitter, FaTelegram } from "react-icons/fa6";
 import { ImSpinner8 } from "react-icons/im";
 import robotLogo from "./assets/logo.svg";
 import YandexMetrika from "./components/YandexMetrika";
+import SolanaToken from "./components/SolanaToken";
 import { useYandexMetrika } from "./hooks/useYandexMetrika";
 
 // Environmental variables
@@ -287,7 +288,6 @@ function App() {
     <div className="flex flex-col h-screen w-screen bg-gray-900 text-gray-100 overflow-hidden">
       {/* Yandex Metrika */}
       <YandexMetrika />
-
       {/* Header */}
       <header className="bg-gray-800 border-b border-gray-700 py-3 px-6 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2">
@@ -321,8 +321,7 @@ function App() {
             <FiTrash2 /> Clear
           </button>
         </div>
-      </header>
-
+      </header>{" "}
       {/* Chat area */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 w-full chat-container">
         <div className="max-w-4xl mx-auto w-full">
@@ -343,6 +342,19 @@ function App() {
                   I'm your unhelpful AI assistant, ready to provide nonsensical
                   answers to all your questions!
                 </p>
+
+                {/* Token Information */}
+                <div className="mt-6 mb-4 bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <div className="text-center mb-3">
+                    <h3 className="text-lg font-semibold text-gray-100 mb-1">
+                      💎 DumbGPT Token
+                    </h3>
+                  </div>
+                  <div className="flex justify-center">
+                    <SolanaToken className="max-w-full" />
+                  </div>
+                </div>
+
                 <div className="bg-gray-800 p-4 rounded-lg">
                   <p className="text-sm text-gray-300 font-medium mb-2">
                     Examples of what you can ask:
@@ -375,21 +387,6 @@ function App() {
                       "What's the best way to stay productive?"
                     </li>
                   </ul>
-                </div>
-
-                {/* Social links */}
-                <div className="mt-4 flex justify-center items-center bg-gray-800 p-3 rounded-lg">
-                  <p className="text-sm text-gray-300 mr-3">Follow us:</p>
-                  <a
-                    href="https://x.com/GptDumb"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-gray-300 hover:text-blue-400 transition-colors"
-                    title="Follow us on X"
-                  >
-                    <FaXTwitter className="mr-1" size={16} />
-                    <span>@GptDumb</span>
-                  </a>
                 </div>
 
                 {/* Disclaimer */}
@@ -452,7 +449,6 @@ function App() {
           )}
         </div>
       </div>
-
       {/* Input area */}
       <div className="input-container p-4 pb-2">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto w-full">
@@ -484,7 +480,7 @@ function App() {
             </button>
           </div>
           <p className="text-xs text-gray-400 mt-2 mb-0 text-center flex justify-center items-center">
-            Press Enter to send. Responses are intentionally unhelpful.
+            Responses are intentionally unhelpful.
           </p>
           <p className="text-xs text-gray-400 mt-2 mb-0 text-center flex justify-center items-center">
             <a
@@ -499,7 +495,7 @@ function App() {
                 style={{ marginTop: "2px" }}
                 size={10}
               />{" "}
-              <span>Open Source</span>
+              <span>Github</span>
             </a>
             <span className="mx-2">•</span>
             <a
@@ -515,6 +511,21 @@ function App() {
                 size={10}
               />{" "}
               <span>Follow</span>
+            </a>
+            <span className="mx-2">•</span>
+            <a
+              href="https://t.me/dumbgpt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              title="Join Telegram"
+            >
+              <FaTelegram
+                className="mr-1 flex-shrink-0"
+                style={{ marginTop: "2px" }}
+                size={10}
+              />{" "}
+              <span>Telegram</span>
             </a>
           </p>
         </form>
