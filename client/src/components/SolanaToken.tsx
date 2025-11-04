@@ -7,7 +7,7 @@ interface SolanaTokenProps {
 
 export default function SolanaToken({ className = "" }: SolanaTokenProps) {
   // Hardcoded token address for now
-  const mintAddress = "DumbGPTTokenAddressWillBeHereSoon123456789";
+  const mintAddress = "DUmbtVJgeYvojL7urcbRT6buVygni2pHEYTaWofNwe8b";
   const [isCopied, setIsCopied] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
